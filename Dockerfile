@@ -5,7 +5,6 @@ FROM golang:1.24-alpine AS builder
 WORKDIR /app
 ARG TARGETARCH
 
-
 RUN apk --no-cache --update add \
   build-base \
   gcc \
@@ -30,14 +29,26 @@ RUN apk add --no-cache --update \
   ca-certificates \
   tzdata \
   fail2ban \
-  bash
+  bash \
+  && mkdir -p /etc/x-ui
 
+# Копируем бинарники и скрипты
 COPY --from=builder /app/build/ /app/
 COPY --from=builder /app/DockerEntrypoint.sh /app/
 COPY --from=builder /app/x-ui.sh /usr/bin/x-ui
 
+# Создаем базовый конфиг
+RUN echo '{
+  "port": 2053,
+  "ssl": { "enabled": false },
+  "secretKey": "DEFAULT_SECRET_CHANGE_ME",
+  "web": {
+    "username": "admin",
+    "password": "admin"
+  }
+}' > /etc/x-ui/config.json
 
-# Configure fail2ban
+# Настройка fail2ban
 RUN rm -f /etc/fail2ban/jail.d/alpine-ssh.conf \
   && cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local \
   && sed -i "s/^\[ssh\]$/&\nenabled = false/" /etc/fail2ban/jail.local \
@@ -47,8 +58,15 @@ RUN rm -f /etc/fail2ban/jail.d/alpine-ssh.conf \
 RUN chmod +x \
   /app/DockerEntrypoint.sh \
   /app/x-ui \
-  /usr/bin/x-ui
+  /usr/bin/x-ui \
+  && chown -R x-ui:x-ui /etc/x-ui
 
-ENV X_UI_ENABLE_FAIL2BAN="true"
-CMD [ "./x-ui" ]
-ENTRYPOINT [ "/app/DockerEntrypoint.sh" ]
+VOLUME /etc/x-ui
+
+ENV X_UI_ENABLE_FAIL2BAN="true" \
+    XUI_SECRET_KEY="CHANGE_THIS_TO_RANDOM_STRING" \
+    XUI_PORT=2053 \
+    XUI_SSL=false
+
+CMD ["./x-ui"]
+ENTRYPOINT ["/app/DockerEntrypoint.sh"]
