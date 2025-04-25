@@ -4,13 +4,7 @@
 FROM golang:1.24-alpine AS builder
 WORKDIR /app
 ARG TARGETARCH
-FROM ghcr.io/mhsanaei/3x-ui:latest
 
-COPY docker-entrypoint.sh /app/
-RUN chmod +x /app/docker-entrypoint.sh
-
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
-EXPOSE ${XUI_PORT:-2053}
 
 RUN apk --no-cache --update add \
   build-base \
