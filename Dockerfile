@@ -6,10 +6,10 @@ WORKDIR /app
 ARG TARGETARCH
 FROM ghcr.io/mhsanaei/3x-ui:latest
 
-COPY DockerEntrypoint.sh /app/
-RUN chmod +x /app/DockerEntrypoint.sh
+COPY DockerEntrypoint.sh 
+RUN chmod +x DockerEntrypoint.sh
 
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+ENTRYPOINT ["/DockerEntrypoint.sh"]
 EXPOSE ${XUI_PORT:-2053}
 
 RUN apk --no-cache --update add \
