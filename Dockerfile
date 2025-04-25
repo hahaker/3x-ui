@@ -61,7 +61,7 @@ RUN chmod +x \
   /usr/bin/x-ui \
   && chown -R x-ui:x-ui /etc/x-ui
 
-VOLUME /etc/x-ui
+#VOLUME /etc/x-ui
 
 ENV X_UI_ENABLE_FAIL2BAN="true" \
     XUI_SECRET_KEY="CHANGE_THIS_TO_RANDOM_STRING" \
