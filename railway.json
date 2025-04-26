@@ -1,24 +1,29 @@
 {
-  "$schema": "https://railway.com/railway.schema.json",
-  "build": {
-    "builder": "DOCKERFILE",
-    "dockerfilePath": "Dockerfile"
-  },
-  "deploy": {
-    "runtime": "V2",
-    "numReplicas": 1,
-    "sleepApplication": false,
-    "multiRegionConfig": {
-      "us-east4-eqdc4a": {
-        "numReplicas": 1
-      }
-    },
-    volumes": [
+  "$schema": "https://railway.app/railway.schema.json",
+  "services": {
+    "x-ui": {
+      "build": {
+        "dockerfile": "Dockerfile"
+      },
+      "deploy": {
+        "startCommand": "./x-ui",
+        "healthcheckPath": "/",
+        "healthcheckTimeout": 5000
+      },
+      "port": 2053,
+      "variables": {
+        "XUI_PORT": "2053",
+        "XUI_USERNAME": "admin",
+        "XUI_PASSWORD": "your_secure_password",
+        "XUI_DB_PATH": "/etc/x-ui/x-ui.db",
+        "RAILWAY_RUN_UID": "0"
+      },
+      "volumes": [
         {
           "name": "xui-data",
           "path": "/etc/x-ui"
         }
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
+      ]
+    }
   }
 }
