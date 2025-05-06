@@ -1,0 +1,10 @@
+[[redirects]]
+  from = "/"
+  to = "/web/login.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/*"
+  to = "/web/:splat"
+  status = 200
